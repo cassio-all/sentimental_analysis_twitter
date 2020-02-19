@@ -2,7 +2,5 @@
 __pycache__/
 *.pyc
 .idea/
-data/input/**
-data/log/input/**
-data/log/output/**
-api/config.ini
+*.ini
+*.csv
