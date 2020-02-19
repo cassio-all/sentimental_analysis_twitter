@@ -1,4 +1,4 @@
-# Social Midia Sentimental analysis
+# Social Network Sentimental analysis
 
 
 ## Authors
