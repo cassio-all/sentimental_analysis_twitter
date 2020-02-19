@@ -173,21 +173,3 @@ class Processing(object):
 
         return pd.DataFrame({"Tweets": clean_tweets, "Bag of words ": bag_of_words, "N-gram": bag_of_words_n_gram})
 
-        
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
