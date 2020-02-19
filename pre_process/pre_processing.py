@@ -171,7 +171,7 @@ class Processing(object):
             bag_of_words_n_gram .append(bag_n_gr)
             clean_tweets.append(sentence)
 
-        return return pd.DataFrame({"Tweets": clean_tweets, "Bag of words ": bag_of_words, "N-gram": bag_of_words_n_gram})
+        return pd.DataFrame({"Tweets": clean_tweets, "Bag of words ": bag_of_words, "N-gram": bag_of_words_n_gram})
 
         
 
