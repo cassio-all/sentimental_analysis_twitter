@@ -38,47 +38,8 @@ def get_args():
   return parser.parse_args()
 
 
-def main(search_words, n_tweets):
-
-    nlp = spacy.load('pt')
-    nltk.download("stopwords")
-    nltk.download('punkt')
-    stop_words = set(stopwords.words('portuguese'))
-    nltk.download('rslp')
-    
-    df = Twitter.get_tweets(search_words, n_tweets) # DataFrame
-    Processing.words_dataset(df['tweets'], stop_words, nlp)
-    all_words, all_words_n_gram = Processing.words_dataset(df['tweets'], stop_words, nlp) # Get all dataset words
-    pairs = Processing.words_frequency(all_words) # Words Frequency
-
-    bag_of_words = []
-    bag_of_words_n_gram = []
-    clean_tweets = []
-    # Cleaning tweets dataset
-    count = 0
-    for element in df['tweets']:
-
-        if count < 10: # Testing just with the firts tweets
-            x = Processing.clean(element)
-            y = Processing.tokenize(x)
-            z = Processing.nltk_stop_words(y, stop_words)
-            k = Processing.spacy_stop_words(z, nlp)
-            p = Processing.lemma(k, nlp)
-            t, size = Processing.concatenate(p)
-            w = Processing.n_gram(t, size)
-            m = Processing.bag_of_words(w, all_words_n_gram)
-            t = Processing.bag_of_words(p, all_words)
-            bag_of_words_n_gram.append(m)
-            bag_of_words.append(t)
-            clean_tweets.append(t)
-        count += 1
-
-    df_clean = pd.DataFrame({"Tweets": clean_tweets, "Bag of words ": bag_of_words, "N-gram": bag_of_words_n_gram})
-
-    return df_clean
-    
-
 if __name__ == "__main__":
+
     import pdb; pdb.set_trace()
     args = get_args()
 
