@@ -5,4 +5,4 @@ __pycache__/
 data/input/**
 data/log/input/**
 data/log/output/**
-config.ini
+api/config.ini
