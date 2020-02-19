@@ -1,13 +1,6 @@
 import argparse
-import nltk 
-import spacy
 
 import pandas as pd
-
-from nltk.corpus import stopwords 
-from nltk.tokenize import word_tokenize 
-from spacy.lang.pt import Portuguese
-from spacy.lang.pt.stop_words import STOP_WORDS
 
 from pre_process.pre_processing import Processing
 from social_collector.collect_data import CollectData

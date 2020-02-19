@@ -27,3 +27,6 @@ class DataHandler(object):
         dataset.to_csv(os.path.join(directory_log
                        , self.social_network + self.search_words + date + '.csv')
                        , sep=';', index=None)
+
+    def store_processed_dataset(dataset):
+        pass

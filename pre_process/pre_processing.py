@@ -91,7 +91,7 @@ class Processing(object):
         return final_phrase, size
 
 
-     # Function to apply n-gram (bi-grams? tri-grams?)
+     # Function to apply n-gram
     def n_gram(self, sentence, size):
 
         sentence = [sentence]
