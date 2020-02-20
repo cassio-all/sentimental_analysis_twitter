@@ -91,7 +91,7 @@ class Processing(object):
         return final_phrase, size
 
 
-     # Function to apply n-gram (bi-grams? tri-grams?)
+     # Function to apply n-gram
     def n_gram(self, sentence, size):
 
         sentence = [sentence]
@@ -172,22 +172,4 @@ class Processing(object):
             clean_tweets.append(sentence)
 
         return pd.DataFrame({"Tweets": clean_tweets, "Bag of words ": bag_of_words, "N-gram": bag_of_words_n_gram})
-
-        
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
 
