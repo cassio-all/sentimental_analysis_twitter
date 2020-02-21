@@ -28,7 +28,8 @@ class CollectData(object):
 
     def get_tweets(self):
 
-        api = Api.twitter_api()    
+        api = Api.twitter_api()  
+        import pdb; pdb.set_trace()  
         new_search = self.search_words + " -filter:retweets" # Filter retweets
         tweets = tw.Cursor(api.search , q=new_search, lang = 'pt').items(self.n_tweets)
 
@@ -41,5 +42,5 @@ class CollectData(object):
 
         dataset = pd.DataFrame({"Created_at": created, "tweets": tweets_})
 
-        store_data = DataHandler('twitter', search_words)
+        store_data = DataHandler('twitter', self.search_words)
         store_data.store_network_dataset(dataset)
