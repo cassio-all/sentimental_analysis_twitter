@@ -6,6 +6,8 @@ import string, collections
 import nltk, re, string, collections
 import sklearn.feature_extraction.text as txt
 
+from data.data_handler import DataHandler
+
 import pandas as pd
 
 from nltk.corpus import stopwords 
@@ -14,46 +16,39 @@ from nltk.util import ngrams
 from spacy.lang.pt import Portuguese
 from spacy.lang.pt.stop_words import STOP_WORDS
 
-from social_collector.collect_data import CollectData
-
-from unidecode import unidecode 
-
+from unidecode import unidecode
 
 class Processing(object):
 
-    def __init__(self, tweet):
+    def __init__(self, social_networks, search_word):
 
-        self.tweet
+        self.social_network = social_networks
+        self.search_words = search_word
 
-    # Function to clean text
-    def clean(self, tweets):
+    def clean(tweet):
 
-        tweet = unidecode(tweet)
-        tweet = tweet.replace('"', ' ')
-        tweet = re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", "", tweet)
-        tweet = tweet.lower()
+        accent = unidecode(tweet)
+        asp = accent.replace('"', ' ')
+        replaces = re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", "", asp)
 
-        return tweets
+        return replaces
 
-    # Function to tokenize 
-    def tokenize(self, tweets):
+    def tokenize(replaces):
 
-        word_tokens = word_tokenize(tweet)
+        token = word_tokenize(replaces)
 
-        return word_tokens
+        return token
 
-    # Function to remove nltk stopwords
-    def nltk_stop_words(self, word_tokens, stop_words):
+    def nltk_stop_words(word_tokens, stop_words):
 
         filtered_sentence = []
         for w in word_tokens:
             if w not in stop_words:
                 filtered_sentence.append(w)
-
+        
         return filtered_sentence
 
-    # Function to remove spacy stopwords
-    def spacy_stop_words(self, filtered_sentence, nlp):
+    def spacy_stop_words(filtered_sentence, nlp):
 
         filtered_sentence_ = []
         for w in filtered_sentence:
@@ -61,10 +56,9 @@ class Processing(object):
             if lexeme.is_stop == False:
                 filtered_sentence_.append(w)
 
-        return filtered_sentence_
+        return filtered_sentence_ 
 
-    # Function to lemmas
-    def lemma(self, filtered_sentence_, nlp):
+    def lemma(filtered_sentence_, nlp):
 
         filtered_sentence_lemma = []
         for w in filtered_sentence_:
@@ -75,11 +69,10 @@ class Processing(object):
                     filtered_sentence_lemma.append(token.lemma_)
                 else:
                     filtered_sentence_lemma.append(w)
-                    
+
         return filtered_sentence_lemma
 
-    # Function to concatenate words in a sentence
-    def concatenate(self, filtered_sentence_lemma):
+    def concatenate(filtered_sentence_lemma):
 
         size = 2
         if len(filtered_sentence_lemma) == 1:
@@ -90,20 +83,16 @@ class Processing(object):
 
         return final_phrase, size
 
+    def n_gram(final_phrase, size):
 
-     # Function to apply n-gram
-    def n_gram(self, sentence, size):
-
-        sentence = [sentence]
-        vect = txt.CountVectorizer(ngram_range=(size,size))
-        txt.d
+        sentence = [final_phrase]
+        vect = txt.CountVectorizer(ngram_range=(size, size))
         vect.fit(sentence)
         ngram_words = vect.get_feature_names()
 
         return ngram_words
 
-    # Function to create a bag
-    def bag_of_words(self, words, all_words):
+    def bag_of_words(words, all_words):
 
         bag = [0]*len(all_words)
         for s in words:
@@ -112,36 +101,37 @@ class Processing(object):
                     bag[i] = 1
         return bag
 
-    # All words in dataset
-    def words_dataset(self, sentence, stop_words, nlp):
+    def words_dataset(sentence, stop_words, nlp):
         
         all_words = []
         all_words_n_gram = []
         for element in sentence:
-            x = self.clean(element)
-            y = self.tokenize(x)
-            z = self.nltk_stop_words(y, stop_words)
-            k = self.spacy_stop_words(z, nlp)
-            p = self.lemma(k, nlp)
-            l, size = self.concatenate(p)
-            k = self.n_gram(l, size)
-            for element in k:
-                all_words_n_gram.append(element)
-            for element_ in p:
+            cleaned = Processing.clean(element)
+            token = Processing.tokenize(cleaned)
+            nltk_stop_sent = Processing.nltk_stop_words(token, stop_words)
+            spacy_stop_sent = Processing.spacy_stop_words(nltk_stop_sent, nlp)
+            lemma_ = Processing.lemma(spacy_stop_sent, nlp)
+            concat, size = Processing.concatenate(lemma_)
+            ngram_words = Processing.n_gram(concat, size)
+            for element_ in ngram_words:
+                all_words_n_gram.append(element_)
+            for element_ in lemma_:
                 all_words.append(element_)
 
         return all_words, all_words_n_gram
 
-    # Check words frequency
-    def words_frequency(self, all_words):
+    def words_frequency(all_words):
 
         wordfreq = [all_words.count(w) for w in all_words]
         pairs = list(zip(all_words, wordfreq))
-
+        
         return pairs
 
 
     def pre_processing(self):
+
+        handler = DataHandler(self.social_network, self.search_words)
+        df = handler.read_network_dataset('dataset.csv')
 
         nlp = spacy.load('pt')
         nltk.download("stopwords")
@@ -150,26 +140,30 @@ class Processing(object):
         nltk.download('rslp')
 
         all_words, all_words_n_gram = Processing.words_dataset(df['tweets'], stop_words, nlp) # Get all dataset words
-        pairs = Processing.words_frequency(all_words) # Words Frequency
-
+        #freq_words = Processing.words_frequency(all_words) # Words Frequency
+        
         bag_of_words = []
         bag_of_words_n_gram = []
         clean_tweets = []
 
-        for element in tweet:
+        for element in df['tweets']:
 
-            cleaned = self.clean(element)
-            tok = self.tokenize(cleaned)
-            stop_nltk = self.nltk_stop_words(tok)
-            stop_spacy = self.spacy_stop_words(stop_nltk, nlp)
-            lem = self.lemma(stop_spacy, nlp)
-            sentence, size = self.concatenate(lem)
-            n_gr = self.n_gram(sentence, size)
-            bag_n_gr = self.bag_of_words(n_gr, all_words_n_gram)
-            bag_w = self.bag_of_words(lem, all_words)
-            bag_of_words.append(bag_w)
-            bag_of_words_n_gram .append(bag_n_gr)
-            clean_tweets.append(sentence)
+        
+            cleaned = Processing.clean(element)
+            token = Processing.tokenize(cleaned)
+            nltk_stop_sent = Processing.nltk_stop_words(token, stop_words)
+            spacy_stop_sent = Processing.spacy_stop_words(nltk_stop_sent, nlp)
+            lemma_ = Processing.lemma(spacy_stop_sent, nlp)
+            concat, size = Processing.concatenate(lemma_)
+            ngram_words = Processing.n_gram(concat, size)
 
-        return pd.DataFrame({"Tweets": clean_tweets, "Bag of words ": bag_of_words, "N-gram": bag_of_words_n_gram})
+            bag_ngram = Processing.bag_of_words(ngram_words, all_words_n_gram)
+            bag_words = Processing.bag_of_words(lemma_, all_words)
+            bag_of_words_n_gram.append(bag_ngram)
+            bag_of_words.append(bag_words)
+        
+            
+            clean_tweets.append(concat)
 
+        dataset = pd.DataFrame({"Posts": clean_tweets, "BOW": bag_of_words, "BOW-N": bag_of_words_n_gram})
+        handler.store_processed_dataset(dataset)
