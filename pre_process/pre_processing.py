@@ -21,9 +21,9 @@ from unidecode import unidecode
 
 class Processing(object):
 
-    def __init__(self, tweet):
+    def __init__(self):
 
-        self.tweet
+        self.tweet = None
 
     # Function to clean text
     def clean(self, tweets):
@@ -96,7 +96,6 @@ class Processing(object):
 
         sentence = [sentence]
         vect = txt.CountVectorizer(ngram_range=(size,size))
-        txt.d
         vect.fit(sentence)
         ngram_words = vect.get_feature_names()
 
@@ -143,14 +142,16 @@ class Processing(object):
 
     def pre_processing(self):
 
-        nlp = spacy.load('pt')
+        nlp = spacy.load('pt_core_news_sm')
         nltk.download("stopwords")
         nltk.download('punkt')
-        stop_words = set(stopwords.words('portuguese'))
         nltk.download('rslp')
+        stop_words = set(stopwords.words('portuguese'))
 
-        all_words, all_words_n_gram = Processing.words_dataset(df['tweets'], stop_words, nlp) # Get all dataset words
-        pairs = Processing.words_frequency(all_words) # Words Frequency
+        df = pd.read_csv(r'data/input/dataset.csv', sep=';')
+
+        all_words, all_words_n_gram = self.words_dataset(df['tweets'], stop_words, nlp) # Get all dataset words
+        pairs = self.words_frequency(all_words) # Words Frequency
 
         bag_of_words = []
         bag_of_words_n_gram = []

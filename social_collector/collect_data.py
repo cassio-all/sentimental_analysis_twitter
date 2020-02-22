@@ -29,7 +29,6 @@ class CollectData(object):
     def get_tweets(self):
 
         api = Api.twitter_api()  
-        import pdb; pdb.set_trace()  
         new_search = self.search_words + " -filter:retweets" # Filter retweets
         tweets = tw.Cursor(api.search , q=new_search, lang = 'pt').items(self.n_tweets)
 
