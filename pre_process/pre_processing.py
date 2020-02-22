@@ -86,11 +86,16 @@ class Processing(object):
     def n_gram(final_phrase, size):
 
         sentence = [final_phrase]
-        vect = txt.CountVectorizer(ngram_range=(size, size))
-        vect.fit(sentence)
-        ngram_words = vect.get_feature_names()
 
-        return ngram_words
+        if sentence[0] == '':
+            return sentence[0]
+            
+        else:
+            vect = txt.CountVectorizer(ngram_range=(size, size))
+            vect.fit(sentence)
+            ngram_words = vect.get_feature_names()
+
+            return ngram_words
 
     def bag_of_words(words, all_words):
 
