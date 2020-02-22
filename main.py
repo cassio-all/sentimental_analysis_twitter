@@ -33,12 +33,11 @@ def get_args():
 
 if __name__ == "__main__":
 
-    import pdb; pdb.set_trace()
     args = get_args()
 
-    d = {'col1': [1, 2], 'col2': [3, 4]}
-    df = pd.DataFrame(data=d)
-
-    collector = CollectData(social_networks, search_words, n_tweets)
+    collector = CollectData(args.social_network, args.search_words, args.n_tweets)
     collector.network_handler()
+
+    processing = Processing(args.social_network, args.search_words)
+    processing.pre_processing()
     
