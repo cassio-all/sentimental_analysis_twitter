@@ -4,4 +4,4 @@ __pycache__/
 .idea/
 *.csv
 *.ini
-.vscode
+.vscode/
