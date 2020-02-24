@@ -40,4 +40,3 @@ if __name__ == "__main__":
 
     processing = Processing(args.social_network, args.search_words)
     processing.pre_processing()
-    
