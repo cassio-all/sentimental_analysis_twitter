@@ -142,7 +142,7 @@ class Processing(object):
         df_network = handler.read_network_dataset()
         df = df_network[df_network.tweets != '']
 
-        nlp = spacy.load('pt')
+        nlp = spacy.load('pt_core_news_sm')
         nltk.download("stopwords")
         nltk.download('punkt')
         stop_words = set(stopwords.words('portuguese'))
