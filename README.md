@@ -5,6 +5,7 @@ Project whose the aim is to capture Social Network posts and extract the feeling
 ## Getting Started/Requirements/Prerequisites/Dependencies
 
 - run <strong>pip install -r requirements.txt</strong> to install the requirements in your environment
+- 
 - visit [twitter-develop](https://developer.twitter.com/) and create a Twitter account if you don't have one. You'll need to generate access keys and add them to the file api/configs.ini
 - Running:
     - the program so far has three  input variables, all of which are optional. They are: which social network wants to collect data, hashtag you want to search on Twitter, number of posts you want to collect. The default is: <em>twitter</em>, <em>política</em>, <em>200</em>, respectively.

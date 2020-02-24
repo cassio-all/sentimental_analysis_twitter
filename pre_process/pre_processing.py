@@ -23,8 +23,9 @@ class Processing(object):
     def __init__(self, social_networks, search_word):
 
         self.social_network = social_networks
-        self.search_words = search_word
+        self.search_word = search_word
 
+    @staticmethod
     def clean(tweet):
 
         accent = unidecode(tweet)
@@ -33,12 +34,14 @@ class Processing(object):
 
         return replaces
 
+    @staticmethod
     def tokenize(replaces):
 
         token = word_tokenize(replaces)
 
         return token
 
+    @staticmethod
     def nltk_stop_words(word_tokens, stop_words):
 
         filtered_sentence = []
@@ -48,6 +51,7 @@ class Processing(object):
         
         return filtered_sentence
 
+    @staticmethod
     def spacy_stop_words(filtered_sentence, nlp):
 
         filtered_sentence_ = []
@@ -58,6 +62,7 @@ class Processing(object):
 
         return filtered_sentence_ 
 
+    @staticmethod
     def lemma(filtered_sentence_, nlp):
 
         filtered_sentence_lemma = []
@@ -72,6 +77,7 @@ class Processing(object):
 
         return filtered_sentence_lemma
 
+    @staticmethod
     def concatenate(filtered_sentence_lemma):
 
         size = 2
@@ -83,6 +89,7 @@ class Processing(object):
 
         return final_phrase, size
 
+    @staticmethod
     def n_gram(final_phrase, size):
 
         sentence = [final_phrase]
@@ -97,6 +104,7 @@ class Processing(object):
 
             return ngram_words
 
+    @staticmethod
     def bag_of_words(words, all_words):
 
         bag = [0]*len(all_words)
@@ -106,8 +114,9 @@ class Processing(object):
                     bag[i] = 1
         return bag
 
+    @staticmethod
     def words_dataset(sentence, stop_words, nlp):
-        
+
         all_words = []
         all_words_n_gram = []
         for element in sentence:
@@ -125,36 +134,36 @@ class Processing(object):
 
         return all_words, all_words_n_gram
 
+    @staticmethod
     def words_frequency(all_words):
 
         wordfreq = [all_words.count(w) for w in all_words]
         pairs = list(zip(all_words, wordfreq))
-        
+
         return pairs
 
 
     def pre_processing(self):
 
-        handler = DataHandler(self.social_network, self.search_words)
+        handler = DataHandler(self.social_network, self.search_word)
         df_network = handler.read_network_dataset()
         df = df_network[df_network.tweets != '']
 
-        nlp = spacy.load('pt')
+        nlp = spacy.load('pt_core_news_sm')
         nltk.download("stopwords")
         nltk.download('punkt')
         stop_words = set(stopwords.words('portuguese'))
         nltk.download('rslp')
-
+        
         all_words, all_words_n_gram = Processing.words_dataset(df['tweets'], stop_words, nlp) # Get all dataset words
         #freq_words = Processing.words_frequency(all_words) # Words Frequency
-        
+
         bag_of_words = []
         bag_of_words_n_gram = []
         clean_tweets = []
 
         for element in df['tweets']:
 
-        
             cleaned = Processing.clean(element)
             token = Processing.tokenize(cleaned)
             nltk_stop_sent = Processing.nltk_stop_words(token, stop_words)
@@ -172,4 +181,5 @@ class Processing(object):
             clean_tweets.append(concat)
 
         dataset = pd.DataFrame({"Posts": clean_tweets, "BOW": bag_of_words, "BOW-N": bag_of_words_n_gram})
+        import pdb; pdb.set_trace()
         handler.store_processed_dataset(dataset)
