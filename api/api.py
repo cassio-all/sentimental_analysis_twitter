@@ -10,7 +10,7 @@ class Api(object):
     def twitter_api():
 
         config = configparser.ConfigParser()
-        config.read('api\configs.ini') 
+        config.read(r'api/configs.ini') 
         consumer_key = config['TWITTER']['consumer_key']
         consumer_secret = config['TWITTER']['consumer_secret']
         access_token = config['TWITTER']['access_token']

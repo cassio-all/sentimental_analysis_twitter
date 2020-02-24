@@ -136,7 +136,7 @@ class Processing(object):
     def pre_processing(self):
 
         handler = DataHandler(self.social_network, self.search_words)
-        df = handler.read_network_dataset('dataset.csv')
+        df = handler.read_network_dataset()
 
         nlp = spacy.load('pt')
         nltk.download("stopwords")
@@ -172,4 +172,3 @@ class Processing(object):
 
         dataset = pd.DataFrame({"Posts": clean_tweets, "BOW": bag_of_words, "BOW-N": bag_of_words_n_gram})
         handler.store_processed_dataset(dataset)
-        
