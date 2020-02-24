@@ -39,4 +39,4 @@ if __name__ == "__main__":
     collector.network_handler()
 
     processing = Processing(args.social_network, args.search_words)
-    processing.pre_processing()
+    #processing.pre_processing()
