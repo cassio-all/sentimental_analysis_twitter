@@ -20,6 +20,9 @@ from unidecode import unidecode
 
 class Processing(object):
 
+    # search_words: Term for related tweets
+    # social_networks: Social networks that will be collected the data
+
     def __init__(self, social_networks, search_word):
 
         self.social_network = social_networks
