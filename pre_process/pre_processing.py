@@ -136,7 +136,7 @@ class Processing(object):
     def pre_processing(self):
 
         handler = DataHandler(self.social_network, self.search_words)
-        df_network  = handler.read_network_dataset()
+        df_network = handler.read_network_dataset()
         df = df_network[df_network.tweets != '']
 
         nlp = spacy.load('pt')
