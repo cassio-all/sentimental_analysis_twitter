@@ -4,4 +4,5 @@ __pycache__/
 .idea/
 *.csv
 *.ini
+*.png
 .vscode/
