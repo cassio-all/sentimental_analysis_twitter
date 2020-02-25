@@ -10,6 +10,9 @@ from data.data_handler import DataHandler
 
 import pandas as pd
 
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+
 from nltk.corpus import stopwords 
 from nltk.tokenize import word_tokenize 
 from nltk.util import ngrams
@@ -34,8 +37,9 @@ class Processing(object):
         lw = accent.lower()
         asp = lw.replace('"', ' ')
         replaces = re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", "", asp)
+        digits_replace= ''.join([i for i in replaces if not i.isdigit()])
 
-        return replaces
+        return digits_replace
 
     def tokenize(replaces):
 
@@ -87,6 +91,12 @@ class Processing(object):
 
         return final_phrase, size
 
+    def word_cloud(posts):
+
+        text = " ".join(review for review in posts)
+        wordcloud = WordCloud(max_font_size=100,width = 1520, height = 535, background_color="white").generate(text)
+        wordcloud.to_file("data/input/wordcloud.png")
+      
     def n_gram(final_phrase, size):
 
         sentence = [final_phrase]
@@ -146,7 +156,10 @@ class Processing(object):
         nlp = spacy.load('pt_core_news_sm')
         nltk.download("stopwords")
         nltk.download('punkt')
-        stop_words = set(stopwords.words('portuguese'))
+
+        stop_words_ = set(stopwords.words('portuguese'))
+        stop_words = [Processing.clean(stop) for stop in stop_words_]
+
         nltk.download('rslp')
 
         all_words, all_words_n_gram = Processing.words_dataset(df['tweets'], stop_words, nlp) # Get all dataset words
@@ -170,9 +183,11 @@ class Processing(object):
             bag_words = Processing.bag_of_words(lemma_, all_words)
             bag_of_words_n_gram.append(bag_ngram)
             bag_of_words.append(bag_words)
-        
-            
+
             clean_tweets.append(concat)
+
+
+        Processing.word_cloud(clean_tweets)
 
         dataset = pd.DataFrame({"Posts": clean_tweets, "BOW": bag_of_words, "BOW-N": bag_of_words_n_gram})
         handler.store_processed_dataset(dataset)
