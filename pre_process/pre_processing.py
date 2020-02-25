@@ -31,7 +31,8 @@ class Processing(object):
     def clean(tweet):
 
         accent = unidecode(tweet)
-        asp = accent.replace('"', ' ')
+        lw = accent.lower()
+        asp = lw.replace('"', ' ')
         replaces = re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", "", asp)
 
         return replaces
@@ -149,7 +150,6 @@ class Processing(object):
         nltk.download('rslp')
 
         all_words, all_words_n_gram = Processing.words_dataset(df['tweets'], stop_words, nlp) # Get all dataset words
-        #freq_words = Processing.words_frequency(all_words) # Words Frequency
         
         bag_of_words = []
         bag_of_words_n_gram = []
