@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 from nltk.corpus import stopwords 
 from nltk.tokenize import word_tokenize 
 from nltk.util import ngrams
-from spacy.lang.pt import Portuguese
 from spacy.lang.pt.stop_words import STOP_WORDS
 
 from unidecode import unidecode
@@ -50,25 +49,14 @@ class Processing(object):
         return token
 
     @staticmethod
-    def nltk_stop_words(word_tokens, stop_words):
-
+    def stop_words_remove(word, stop_words):
+        
         filtered_sentence = []
-        for w in word_tokens:
+        for w in word:
             if w not in stop_words:
                 filtered_sentence.append(w)
-        
+
         return filtered_sentence
-
-    @staticmethod
-    def spacy_stop_words(filtered_sentence, nlp):
-
-        filtered_sentence_ = []
-        for w in filtered_sentence:
-            lexeme = nlp.vocab[w]
-            if lexeme.is_stop == False:
-                filtered_sentence_.append(w)
-
-        return filtered_sentence_ 
 
     @staticmethod
     def lemma(filtered_sentence_, nlp):
@@ -76,8 +64,7 @@ class Processing(object):
         filtered_sentence_lemma = []
         for w in filtered_sentence_:
             doc = nlp(w)
-            tokens = [tok for tok in doc]
-            for token in tokens:
+            for token in doc:
                 if token.pos_ == 'VERB':
                     filtered_sentence_lemma.append(token.lemma_)
                 else:
@@ -109,10 +96,11 @@ class Processing(object):
 
         sentence = [final_phrase]
 
-        if sentence[0] == '':
+        if (sentence[0] == '') or (len(sentence[0]) < 3):
             return sentence[0]
             
         else:
+            
             vect = txt.CountVectorizer(ngram_range=(size, size))
             vect.fit(sentence)
             ngram_words = vect.get_feature_names()
@@ -137,9 +125,8 @@ class Processing(object):
         for element in sentence:
             cleaned = Processing.clean(element)
             token = Processing.tokenize(cleaned)
-            nltk_stop_sent = Processing.nltk_stop_words(token, stop_words)
-            spacy_stop_sent = Processing.spacy_stop_words(nltk_stop_sent, nlp)
-            lemma_ = Processing.lemma(spacy_stop_sent, nlp)
+            stop_w = Processing.stop_words_remove(token, stop_words)
+            lemma_ = Processing.lemma(stop_w, nlp)
             concat, size = Processing.concatenate(lemma_)
             ngram_words = Processing.n_gram(concat, size)
             for element_ in ngram_words:
@@ -168,7 +155,8 @@ class Processing(object):
         nltk.download("stopwords")
         nltk.download('punkt')
 
-        stop_words_ = set(stopwords.words('portuguese'))
+        STOP_WORDS.update({'vc', 'vcs', 'pq', 'ta', self.search_word}) # test
+        stop_words_ = STOP_WORDS.union(stopwords.words('portuguese'))
         stop_words = [Processing.clean(stop) for stop in stop_words_]
 
         nltk.download('rslp')
@@ -183,9 +171,8 @@ class Processing(object):
 
             cleaned = Processing.clean(element)
             token = Processing.tokenize(cleaned)
-            nltk_stop_sent = Processing.nltk_stop_words(token, stop_words)
-            spacy_stop_sent = Processing.spacy_stop_words(nltk_stop_sent, nlp)
-            lemma_ = Processing.lemma(spacy_stop_sent, nlp)
+            stop_w = Processing.stop_words_remove(token, stop_words)
+            lemma_ = Processing.lemma(stop_w, nlp)
             concat, size = Processing.concatenate(lemma_)
             ngram_words = Processing.n_gram(concat, size)
 
@@ -200,5 +187,4 @@ class Processing(object):
         Processing.word_cloud(clean_tweets)
 
         dataset = pd.DataFrame({"Posts": clean_tweets, "BOW": bag_of_words, "BOW-N": bag_of_words_n_gram})
-        import pdb; pdb.set_trace()
         handler.store_processed_dataset(dataset)
