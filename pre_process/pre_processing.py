@@ -155,7 +155,7 @@ class Processing(object):
         nltk.download("stopwords")
         nltk.download('punkt')
 
-        STOP_WORDS.update({'vc', 'vcs', 'pq', 'ta', self.search_word}) # test
+        STOP_WORDS.update({'vc', 'vcs', 'pq', 'ta', 'qq', self.search_word}) # test
         stop_words_ = STOP_WORDS.union(stopwords.words('portuguese'))
         stop_words = [Processing.clean(stop) for stop in stop_words_]
 
