@@ -31,58 +31,36 @@ class Processing(object):
         self.search_word = search_word
 
     @staticmethod
-    def clean(tweet):
+    def clean_text(document, stop_words):
 
-        accent = unidecode(tweet)
-        lw = accent.lower()
-        asp = lw.replace('"', ' ')
-        replaces = re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", "", asp)
-        digits_replace= ''.join([i for i in replaces if not i.isdigit()])
+        # Remove accents
+        document = unidecode(document)
+        # Remove https, mentions, special characters, single character
+        document = re.sub("(@[A-Za-z0-9]+)|(_[A-Za-z0-9]+)|(\w+:\/\/\S+)|(\W_)", " ", document).lower()
+        # Remove pontuaction
+        document = re.sub('['+string.punctuation+']', '', document)
+        # Substituting multiple spaces with single space
+        document = re.sub(r'\s+', ' ', document, flags=re.I)
+        # Remove digits
+        document = ''.join([i for i in document if not i.isdigit()])
+        # Remove all single characters
+        document = re.sub(r'\s+[a-zA-Z]\s+', ' ', document)
+        # Split
+        tokens = document.split()
+        # Stopwords
+        tokens = [w for w in tokens if w not in stop_words]
+        # Concatenate
+        preprocessed_text = ' '.join(tokens)
+    
+        return preprocessed_text
 
-        return digits_replace
-
-    @staticmethod
-    def tokenize(replaces):
-
-        token = word_tokenize(replaces)
-
-        return token
-
-    @staticmethod
-    def stop_words_remove(word, stop_words):
-        
-        filtered_sentence = []
-        for w in word:
-            if w not in stop_words:
-                filtered_sentence.append(w)
-
-        return filtered_sentence
 
     @staticmethod
-    def lemma(filtered_sentence_, nlp):
+    def lemma(tokens, nlp):
+        # Lemmatization
+        tokens = [(lem.lemma_ if lem.pos_ == 'VERB' else word)  for word in tokens for lem in nlp(word)]
 
-        filtered_sentence_lemma = []
-        for w in filtered_sentence_:
-            doc = nlp(w)
-            for token in doc:
-                if token.pos_ == 'VERB':
-                    filtered_sentence_lemma.append(token.lemma_)
-                else:
-                    filtered_sentence_lemma.append(w)
-
-        return filtered_sentence_lemma
-
-    @staticmethod
-    def concatenate(filtered_sentence_lemma):
-
-        size = 2
-        if len(filtered_sentence_lemma) == 1:
-            size = 1
-        final_phrase = ""
-        for word in filtered_sentence_lemma:
-            final_phrase += word + " "
-
-        return final_phrase, size
+        return tokens
 
     @staticmethod
     def word_cloud(posts):
@@ -92,20 +70,20 @@ class Processing(object):
         wordcloud.to_file("data/input/wordcloud.png")
       
     @staticmethod
-    def n_gram(final_phrase, size):
+    def n_gram(final_phrase):
 
+        size = 2
         sentence = [final_phrase]
-
         if (sentence[0] == '') or (len(sentence[0]) < 3):
             return sentence[0]
-            
         else:
-            
+            if len(sentence[0].split()) == 1:
+                size = 1
             vect = txt.CountVectorizer(ngram_range=(size, size))
             vect.fit(sentence)
             ngram_words = vect.get_feature_names()
 
-            return ngram_words
+        return ngram_words
 
     @staticmethod
     def bag_of_words(words, all_words):
@@ -118,31 +96,28 @@ class Processing(object):
         return bag
 
     @staticmethod
-    def words_dataset(sentence, stop_words, nlp):
+    def words_dataset(sentences, stop_words, nlp):
 
         all_words = []
         all_words_n_gram = []
-        for element in sentence:
-            cleaned = Processing.clean(element)
-            token = Processing.tokenize(cleaned)
-            stop_w = Processing.stop_words_remove(token, stop_words)
-            lemma_ = Processing.lemma(stop_w, nlp)
-            concat, size = Processing.concatenate(lemma_)
-            ngram_words = Processing.n_gram(concat, size)
-            for element_ in ngram_words:
-                all_words_n_gram.append(element_)
-            for element_ in lemma_:
-                all_words.append(element_)
+
+        for element in sentences:
+            # Clean text
+            sentence = Processing.clean_text(element, stop_words)
+            # Lemma
+            token = Processing.lemma(sentence.split(), nlp)
+            sentence = ' '.join(token)
+            # N Gram
+            ngram_words = Processing.n_gram(sentence)
+            for n in ngram_words:
+                all_words_n_gram.append(n)
+            # Tokenize
+            tokens = sentence.split()
+            # All dataset words dictionary
+            for token in tokens:
+                all_words.append(token)
 
         return all_words, all_words_n_gram
-
-    @staticmethod
-    def words_frequency(all_words):
-
-        wordfreq = [all_words.count(w) for w in all_words]
-        pairs = list(zip(all_words, wordfreq))
-
-        return pairs
 
 
     def pre_processing(self):
@@ -157,34 +132,28 @@ class Processing(object):
 
         STOP_WORDS.update({'vc', 'vcs', 'pq', 'ta', 'qq', self.search_word}) # test
         stop_words_ = STOP_WORDS.union(stopwords.words('portuguese'))
-        stop_words = [Processing.clean(stop) for stop in stop_words_]
+        stop_words = [unidecode(stop).lower() for stop in stop_words_]
 
         nltk.download('rslp')
         
         all_words, all_words_n_gram = Processing.words_dataset(df['tweets'], stop_words, nlp) # Get all dataset words
 
-        bag_of_words = []
-        bag_of_words_n_gram = []
+        bag_words = []
+        bag_words_n_gram = []
+        n_gram = []
         clean_tweets = []
 
-        for element in df['tweets']:
-
-            cleaned = Processing.clean(element)
-            token = Processing.tokenize(cleaned)
-            stop_w = Processing.stop_words_remove(token, stop_words)
-            lemma_ = Processing.lemma(stop_w, nlp)
-            concat, size = Processing.concatenate(lemma_)
-            ngram_words = Processing.n_gram(concat, size)
-
-            bag_ngram = Processing.bag_of_words(ngram_words, all_words_n_gram)
-            bag_words = Processing.bag_of_words(lemma_, all_words)
-            bag_of_words_n_gram.append(bag_ngram)
-            bag_of_words.append(bag_words)
-
+        for sentence in df['tweets']:
+            clean = Processing.clean_text(sentence, stop_words)
+            token = Processing.lemma(clean.split(), nlp)
+            concat = ' '.join(token)
+            ngram = Processing.n_gram(concat)
+            n_gram.append(Processing.n_gram(concat))
+            bag_words_n_gram.append(Processing.bag_of_words(ngram, all_words_n_gram))
+            bag_words.append(Processing.bag_of_words(concat.split(), all_words))
             clean_tweets.append(concat)
-
 
         Processing.word_cloud(clean_tweets)
 
-        dataset = pd.DataFrame({"Posts": clean_tweets, "BOW": bag_of_words, "BOW-N": bag_of_words_n_gram})
+        dataset = pd.DataFrame({"Posts": clean_tweets, "BOW": bag_words, "N-gram": n_gram, "BOW-N": bag_words_n_gram})
         handler.store_processed_dataset(dataset)
