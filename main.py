@@ -12,7 +12,7 @@ def get_args():
   parser.add_argument(
       '--search-words',
       '-sw',
-      default = 'Política',
+      default = 'whitehouse',
       type = str,
       help = 'topic that will be researched on twitter')
   parser.add_argument(
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     args = get_args()
 
     collector = CollectData(args.social_network, args.search_words, args.n_tweets)
-    #collector.network_handler()
+    collector.network_handler()
 
     processing = Processing(args.social_network, args.search_words)
     processing.pre_processing()
