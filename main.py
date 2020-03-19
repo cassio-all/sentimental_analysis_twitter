@@ -36,7 +36,7 @@ if __name__ == "__main__":
     args = get_args()
 
     collector = CollectData(args.social_network, args.search_words, args.n_tweets)
-    collector.network_handler()
+    #collector.network_handler()
 
     processing = Processing(args.social_network, args.search_words)
     processing.pre_processing()
