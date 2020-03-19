@@ -6,6 +6,8 @@ import string, collections
 import nltk, re, string, collections
 import sklearn.feature_extraction.text as txt
 
+from googletrans import Translator
+
 from data.data_handler import DataHandler
 
 import pandas as pd
@@ -16,7 +18,8 @@ import matplotlib.pyplot as plt
 from nltk.corpus import stopwords 
 from nltk.tokenize import word_tokenize 
 from nltk.util import ngrams
-from spacy.lang.pt.stop_words import STOP_WORDS
+#from spacy.lang.pt.stop_words import STOP_WORDS
+from spacy.lang.en.stop_words import STOP_WORDS
 
 from unidecode import unidecode
 
@@ -33,6 +36,13 @@ class Processing(object):
     @staticmethod
     def clean_text(document, stop_words):
 
+        # Split to translate
+        tokens = document.split()
+        # Translate
+        translator = Translator()
+        tokens_ = [translator.translate(w, dest='pt', src='en').text for w in tokens]
+        # Concatenate
+        document = ' '.join(tokens_)
         # Remove accents
         document = unidecode(document)
         # Remove https, mentions, special characters, single character
@@ -126,12 +136,12 @@ class Processing(object):
         df_network = handler.read_network_dataset()
         df = df_network[df_network.tweets != '']
 
-        nlp = spacy.load('pt_core_news_sm')
+        #nlp = spacy.load('pt_core_news_sm')
+        nlp = spacy.load('en_core_web_sm')
         nltk.download("stopwords")
         nltk.download('punkt')
 
-        STOP_WORDS.update({'vc', 'vcs', 'pq', 'ta', 'qq', self.search_word}) # test
-        stop_words_ = STOP_WORDS.union(stopwords.words('portuguese'))
+        stop_words_ = STOP_WORDS.union(stopwords.words('english'))
         stop_words = [unidecode(stop).lower() for stop in stop_words_]
 
         nltk.download('rslp')
