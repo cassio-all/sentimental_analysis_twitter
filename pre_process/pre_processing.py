@@ -18,7 +18,6 @@ import matplotlib.pyplot as plt
 from nltk.corpus import stopwords 
 from nltk.tokenize import word_tokenize 
 from nltk.util import ngrams
-#from spacy.lang.pt.stop_words import STOP_WORDS
 from spacy.lang.en.stop_words import STOP_WORDS
 
 from unidecode import unidecode
@@ -34,15 +33,14 @@ class Processing(object):
         self.search_word = search_word
 
     @staticmethod
-    def clean_text(document, stop_words):
+    def clean_text(document):
 
+        stop_words_ = STOP_WORDS.union(stopwords.words('english'))
+        stop_words = [unidecode(stop).lower() for stop in stop_words_]
         # Split to translate
         tokens = document.split()
-        # Translate
-        translator = Translator()
-        tokens_ = [translator.translate(w, dest='pt', src='en').text for w in tokens]
         # Concatenate
-        document = ' '.join(tokens_)
+        document = ' '.join(tokens)
         # Remove accents
         document = unidecode(document)
         # Remove https, mentions, special characters, single character
@@ -128,42 +126,3 @@ class Processing(object):
                 all_words.append(token)
 
         return all_words, all_words_n_gram
-
-
-    def pre_processing(self):
-
-        handler = DataHandler(self.social_network, self.search_word)
-        df_network = handler.read_network_dataset()
-        df = df_network[df_network.tweets != '']
-
-        #nlp = spacy.load('pt_core_news_sm')
-        nlp = spacy.load('en_core_web_sm')
-        nltk.download("stopwords")
-        nltk.download('punkt')
-
-        stop_words_ = STOP_WORDS.union(stopwords.words('english'))
-        stop_words = [unidecode(stop).lower() for stop in stop_words_]
-
-        nltk.download('rslp')
-        
-        all_words, all_words_n_gram = Processing.words_dataset(df['tweets'], stop_words, nlp) # Get all dataset words
-
-        bag_words = []
-        bag_words_n_gram = []
-        n_gram = []
-        clean_tweets = []
-
-        for sentence in df['tweets']:
-            clean = Processing.clean_text(sentence, stop_words)
-            token = Processing.lemma(clean.split(), nlp)
-            concat = ' '.join(token)
-            ngram = Processing.n_gram(concat)
-            n_gram.append(Processing.n_gram(concat))
-            bag_words_n_gram.append(Processing.bag_of_words(ngram, all_words_n_gram))
-            bag_words.append(Processing.bag_of_words(concat.split(), all_words))
-            clean_tweets.append(concat)
-
-        Processing.word_cloud(clean_tweets)
-
-        dataset = pd.DataFrame({"Posts": clean_tweets, "BOW": bag_words, "N-gram": n_gram, "BOW-N": bag_words_n_gram})
-        handler.store_processed_dataset(dataset)
