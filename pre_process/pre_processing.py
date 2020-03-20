@@ -6,8 +6,6 @@ import string, collections
 import nltk, re, string, collections
 import sklearn.feature_extraction.text as txt
 
-from googletrans import Translator
-
 from data.data_handler import DataHandler
 
 import pandas as pd
@@ -75,7 +73,7 @@ class Processing(object):
 
         text = " ".join(review for review in posts)
         wordcloud = WordCloud(max_font_size=100,width = 1520, height = 535, background_color="white").generate(text)
-        wordcloud.to_file("data/input/wordcloud.png")
+        wordcloud.to_file("data/output/wordcloud.png")
       
     @staticmethod
     def n_gram(final_phrase):
@@ -124,5 +122,3 @@ class Processing(object):
             # All dataset words dictionary
             for token in tokens:
                 all_words.append(token)
-
-        return all_words, all_words_n_gram

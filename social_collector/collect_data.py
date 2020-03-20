@@ -30,7 +30,7 @@ class CollectData(object):
 
         api = Api.twitter_api()  
         new_search = self.search_words + " -filter:retweets" # Filter retweets
-        tweets = tw.Cursor(api.search , q=new_search, lang = 'pt').items(self.n_tweets)
+        tweets = tw.Cursor(api.search , q=new_search, lang = 'en').items(self.n_tweets)
 
         tweets_ = []
         created = []
