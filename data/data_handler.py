@@ -22,11 +22,15 @@ class DataHandler(object):
             if filename == 'dataset.csv':
                 os.remove(os.path.join(directory_input, filename))
 
+        search_words = ''
+        for search_word in self.search_words:
+            search_words += str(search_word)
+
         #saves the new data in the input and input/log directory
         dataset.to_csv(os.path.join(directory_input, 'dataset.csv')
                        , sep=';', index=None)
         dataset.to_csv(os.path.join(directory_log
-                       , self.social_network + self.search_words + date + '.csv')
+                       , self.social_network + search_words + date + '.csv')
                        , sep=';', index=None)
 
     def store_processed_dataset(self, dataset):

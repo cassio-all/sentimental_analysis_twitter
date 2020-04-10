@@ -28,18 +28,21 @@ class CollectData(object):
 
     def get_tweets(self):
 
-        api = Api.twitter_api()  
-        new_search = self.search_words + " -filter:retweets" # Filter retweets
-        tweets = tw.Cursor(api.search , q=new_search, lang = 'en').items(self.n_tweets)
-
+        api = Api.twitter_api()
         tweets_ = []
         created = []
+        hashtag = []
 
-        for tweet in tweets:
-            tweets_.append(tweet.text) # Get tweets
-            created.append(tweet.created_at) # Get timestamp
+        for search_word in self.search_words:
 
-        dataset = pd.DataFrame({"Created_at": created, "tweets": tweets_})
+            new_search = search_word + " -filter:retweets" # Filter retweets
+            tweets = tw.Cursor(api.search , q=new_search, lang = 'en').items(self.n_tweets)
 
+            for tweet in tweets:
+                tweets_.append(tweet.text) # Get tweets
+                created.append(tweet.created_at) # Get timestamp
+                hashtag.append(search_word)
+
+        dataset = pd.DataFrame({"hashtag": hashtag, "created_at": created, "tweet": tweets_})
         store_data = DataHandler('twitter', self.search_words)
         store_data.store_network_dataset(dataset)

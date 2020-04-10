@@ -14,14 +14,14 @@ class ExtractSentiment(object):
 
         handler = DataHandler(self.social_network, self.search_word)
         df_network = handler.read_network_dataset()
-        df = df_network[df_network.tweets != '']
+        df = df_network[df_network.tweet != '']
         
         prepross = Processing(self.social_network, self.search_word)
         analyzer = SentimentIntensityAnalyzer()
 
         predict_df = pd.DataFrame(None, columns=['tweet', 'clean_tweet', 'sentiment'])
         i = 0
-        for tweet in df['tweets']:
+        for tweet in df['tweet']:
             clean_tweet = prepross.clean_text(tweet)
             sentiment = analyzer.polarity_scores(tweet)['compound']
             predict_df.loc[i] = [tweet, clean_tweet, sentiment]
