@@ -17,8 +17,7 @@ class Analysis(object):
         handler = DataHandler(self.social_network, self.search_word)
         df_network = handler.read_predicted_dataset()
         hash_ = df_network.hashtag.unique()
-        print(hash_)
-
+    
         fig, ax = plt.subplots()
         sns.despine(left=True)
         for i in range(len(hash_)):
