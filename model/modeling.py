@@ -19,12 +19,12 @@ class ExtractSentiment(object):
         prepross = Processing(self.social_network, self.search_word)
         analyzer = SentimentIntensityAnalyzer()
 
-        predict_df = pd.DataFrame(None, columns=['tweet', 'clean_tweet', 'sentiment'])
-        i = 0
-        for tweet in df['tweet']:
-            clean_tweet = prepross.clean_text(tweet)
-            sentiment = analyzer.polarity_scores(tweet)['compound']
-            predict_df.loc[i] = [tweet, clean_tweet, sentiment]
-            i += 1
+        predict_df = pd.DataFrame(None, columns=['hashtag', 'tweet', 'clean_tweet', 'sentiment'])
+
+        for i, row in df.iterrows():
+
+            clean_tweet = prepross.clean_text(row['tweet'])
+            sentiment = analyzer.polarity_scores(clean_tweet)['compound']
+            predict_df.loc[i] = [row['hashtag'], row['tweet'], clean_tweet, sentiment]
 
         predict_df.to_csv(r'data/output/dataset_predict.csv', sep=';', index=None)
