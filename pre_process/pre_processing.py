@@ -102,14 +102,14 @@ class Processing(object):
         return bag
 
     @staticmethod
-    def words_dataset(sentences, stop_words, nlp):
+    def words_dataset(sentences, nlp):
 
         all_words = []
         all_words_n_gram = []
 
         for element in sentences:
             # Clean text
-            sentence = Processing.clean_text(element, stop_words)
+            sentence = Processing.clean_text(element)
             # Lemma
             token = Processing.lemma(sentence.split(), nlp)
             sentence = ' '.join(token)

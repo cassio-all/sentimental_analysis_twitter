@@ -5,6 +5,7 @@ import pandas as pd
 from pre_process.pre_processing import Processing
 from social_collector.collect_data import CollectData
 from model.modeling import ExtractSentiment
+from analysis.reports import Analysis
 
 
 def get_args():
@@ -13,9 +14,9 @@ def get_args():
   parser.add_argument(
       '--search-words',
       '-sw',
-      default = 'whitehouse',
-      type = str,
-      help = 'topic that will be researched on twitter')
+      default = ['whitehouse'],
+      nargs='+',
+      help = 'topics that will be researched on twitter')
   parser.add_argument(
       '--social-network',
       '-sn',
@@ -42,3 +43,6 @@ if __name__ == "__main__":
     processing = Processing(args.social_network, args.search_words)
     model = ExtractSentiment(args.social_network, args.search_words)
     model.vader_sentiment()
+
+    analysis_ = Analysis(args.social_network, args.search_words)
+    analysis_.reports()
