@@ -58,3 +58,9 @@ class DataHandler(object):
         directory_input = os.path.join(os.path.dirname(__file__), 'input')
 
         return pd.read_csv(os.path.join(directory_input, 'dataset_processed.csv'), sep =';')
+
+    def read_predicted_dataset(self):
+
+        directory_input = os.path.join(os.path.dirname(__file__), 'output')
+
+        return pd.read_csv(os.path.join(directory_input, 'dataset_predict.csv'), sep =';')
