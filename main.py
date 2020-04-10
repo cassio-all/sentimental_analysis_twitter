@@ -39,5 +39,6 @@ if __name__ == "__main__":
     collector = CollectData(args.social_network, args.search_words, args.n_tweets)
     collector.network_handler()
 
+    processing = Processing(args.social_network, args.search_words)
     model = ExtractSentiment(args.social_network, args.search_words)
     model.vader_sentiment()
