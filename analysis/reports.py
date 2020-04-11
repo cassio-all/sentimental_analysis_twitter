@@ -107,7 +107,7 @@ class Analysis(object):
         df_network['sentiment_group'] = ["positive" if x >= 0.3 else ('negative' if x <= -0.3 else "neutral") for x in df_network['sentiment']]
         self.hist(df_network) # Creating histogram chart
         self.frequency(df_network) # Creating a bar chart
-        #self.line(df_network) # Creating line chart
+        #self.line(df_network) # Creating line chart # 
 
 
 

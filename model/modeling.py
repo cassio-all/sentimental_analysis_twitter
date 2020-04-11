@@ -27,4 +27,4 @@ class ExtractSentiment(object):
             sentiment = analyzer.polarity_scores(clean_tweet)['compound']
             predict_df.loc[i] = [row['created_at'], row['hashtag'], row['tweet'], clean_tweet, sentiment]
 
-        predict_df.to_csv(r'data/output/dataset_predict.csv', sep=';', index=None)
+        predict_df.to_csv(r'data/output/dataset_predict.csv', sep=';', index=None) #
