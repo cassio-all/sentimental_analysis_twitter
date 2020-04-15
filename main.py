@@ -45,4 +45,4 @@ if __name__ == "__main__":
     model.vader_sentiment()
 
     analysis_ = Analysis(args.social_network, args.search_words)
-    analysis_.reports()
+    analysis_.reports() # charts

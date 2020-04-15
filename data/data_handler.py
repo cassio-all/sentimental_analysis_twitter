@@ -5,7 +5,7 @@ import pandas as pd
 
 class DataHandler(object):
 
-    def __init__(self, social_network, search_words):
+    def __init__(self, social_network, search_words): #
 
         self.search_words = search_words
         self.social_network = social_network
