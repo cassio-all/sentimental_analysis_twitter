@@ -9,7 +9,7 @@ Project whose the aim is to capture Social Network posts and extract the feeling
     - <strong>python -m spacy download en_core_web_sm</strong> to downoad the portuguese available core model. To see about other models, visit [spacy](https://spacy.io/models).
 - visit [twitter-develop](https://developer.twitter.com/) and create a Twitter account if you don't have one. You'll need to generate access keys and add them to the file api/configs.ini
 - Running:
-    - the program so far has three  input variables, all of which are optional. They are: which social network wants to collect data, hashtag you want to search on Twitter, number of posts you want to collect. The default is: <em>twitter</em>, <em>política</em>, <em>200</em>, respectively.
+    - the program so far has two  input variables, all of which are optional. They are: hashtag you want to search on Twitter and number of posts you want to collect. The default is: <em>whitehouse</em>, <em>200</em>, respectively.
 
 ## To Do
 - Create functions to pre-process the data
