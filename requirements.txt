@@ -156,7 +156,7 @@ psutil==5.6.6
 psycopg2==2.7.6.1
 pt-core-news-sm==2.2.0
 PuLP==1.6.8
-py==1.8.0
+py==1.10.0
 pyasn1==0.4.6
 pyasn1-modules==0.2.7
 pycodestyle==2.5.0
